@@ -1,14 +1,20 @@
 from django.shortcuts import render
+from .models import *
 
 # Create your views here.
 
 # webhook/views.py
 
 
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.db.models import F
+from datetime import datetime
 
+import requests
+from django.http import HttpResponse
 
-
-
+import json
 
 
 
@@ -26,11 +32,7 @@ from django.shortcuts import render
 
 # webhook/views.py
 
-import json
-import requests
-from django.http import HttpResponse
-from django.views.decorators.csrf import csrf_exempt
-from .models import Message
+
 
 # Hardcoded sensitive tokens (For testing purposes only, not recommended for production)
 WEBHOOK_VERIFY_TOKEN = 'harish'
@@ -165,10 +167,7 @@ def webhook1(request):
     else:
         return HttpResponse(status=405)  # Method Not Allowed
 
-from django.http import HttpResponse
-from django.views.decorators.csrf import csrf_exempt
-import json
-from .models import Message
+
 
 
 
@@ -299,8 +298,7 @@ def webhook(request):
 
 # webhook/views.py
 
-from django.shortcuts import render
-from .models import Message
+
 
 def chat_view(request):
     # Fetch all messages
@@ -338,10 +336,7 @@ def chat_view(request):
 
 
 
-from django.http import JsonResponse
-from .models import Message
-from django.views.decorators.csrf import csrf_exempt
-from django.db.models import F
+
 
 @csrf_exempt
 def get_phone_numbers(request):
@@ -356,12 +351,7 @@ def get_phone_numbers(request):
 
 
 # views.py
-from django.http import JsonResponse
-from .models import Message
-from django.views.decorators.csrf import csrf_exempt
-from django.db.models import F
-import json
-from datetime import datetime
+
 
 @csrf_exempt
 def get_messages_by_phone(request, phone_number):
