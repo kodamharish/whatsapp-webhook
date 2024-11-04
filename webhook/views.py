@@ -27,9 +27,6 @@ import json
 
 
 
-
-
-
 # webhook/views.py
 
 
@@ -63,109 +60,7 @@ def send_whatsapp_message(phone_number, message, context=None):
     except requests.exceptions.RequestException as e:
         print(f"Error sending WhatsApp message: {e}")
 
-@csrf_exempt
-def webhook1(request):
-    if request.method == 'GET':
-        # Handle webhook verification
-        mode = request.GET.get('hub.mode')
-        token = request.GET.get('hub.verify_token')
-        challenge = request.GET.get('hub.challenge')
 
-        if mode == 'subscribe' and token == WEBHOOK_VERIFY_TOKEN:
-            print("Webhook verified successfully!")
-            return HttpResponse(challenge, status=200)
-        else:
-            return HttpResponse(status=403)
-
-    elif request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-        except json.JSONDecodeError:
-            return HttpResponse(status=400)
-
-        # Extract message details
-        entry = data.get('entry', [])
-        if not entry:
-            return HttpResponse(status=400)
-
-        changes = entry[0].get('changes', [])
-        if not changes:
-            return HttpResponse(status=400)
-
-        value = changes[0].get('value', {})
-        messages = value.get('messages', [])
-        if not messages:
-            return HttpResponse(status=200)  # No message to process
-
-        message = messages[0]
-        message_type = message.get('type')
-
-        if message_type == 'text':
-            phone_number = message.get('from')  # Sender's WhatsApp ID
-            message_body = message.get('text', {}).get('body').strip().lower()
-
-            if not phone_number or not message_body:
-                return HttpResponse(status=400)
-
-            # Save the message to the database
-            try:
-                Message.objects.create(
-                    phone_number=phone_number,
-                    message_body=message_body
-                )
-            except Exception as e:
-                print(f"Error saving message: {e}")
-                return HttpResponse(status=500)
-
-            # Determine the response based on the message content
-            if message_body in ['hi', 'hello', 'hey']:
-                response_text = (
-                    "Hi! Welcome to **Taare Zamin Par (TZP)**.\n"
-                    "Here are the classes we offer:\n\n"
-                    "1. **3 Days Fun Astronomy Classes**\n"
-                    "2. **5 Days Biology Lab Classes**\n\n"
-                    "Please enter the number corresponding to the class you're interested in."
-                )
-                send_whatsapp_message(phone_number, response_text, context=message.get('id'))
-            elif message_body == '1':
-                class_details = (
-                    "**3 Days Fun Astronomy Classes**\n\n"
-                    "- **Duration:** 3 Days\n"
-                    "- **Schedule:**\n"
-                    "  - **Day 1:** Introduction to Astronomy\n"
-                    "  - **Day 2:** Telescope Session\n"
-                    "  - **Day 3:** Night Sky Observation\n"
-                    "- **Price:** $150\n\n"
-                    "Would you like to enroll?"
-                )
-                send_whatsapp_message(phone_number, class_details, context=message.get('id'))
-            elif message_body == '2':
-                class_details = (
-                    "**5 Days Biology Lab Classes**\n\n"
-                    "- **Duration:** 5 Days\n"
-                    "- **Schedule:**\n"
-                    "  - **Day 1:** Biology Basics\n"
-                    "  - **Day 2:** Cell Structure\n"
-                    "  - **Day 3:** Genetics\n"
-                    "  - **Day 4:** Ecology\n"
-                    "  - **Day 5:** Lab Projects\n"
-                    "- **Price:** $300\n\n"
-                    "Would you like to enroll?"
-                )
-                send_whatsapp_message(phone_number, class_details, context=message.get('id'))
-            else:
-                # Handle unrecognized messages
-                response_text = (
-                    "I'm sorry, I didn't understand that. Please respond with:\n"
-                    "- **Hi** to start the conversation.\n"
-                    "- **1** or **2** to choose a class."
-                )
-                send_whatsapp_message(phone_number, response_text, context=message.get('id'))
-
-        return HttpResponse(status=200)
-
-    else:
-        return HttpResponse(status=405)  # Method Not Allowed
 
 
 
@@ -284,19 +179,6 @@ def webhook(request):
 
 
 
-
-
-
-
-
-
-
-# webhook/views.py
-
-# webhook/views.py
-
-
-# webhook/views.py
 
 
 
